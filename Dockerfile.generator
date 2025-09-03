@@ -1,0 +1,9 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY generator ./generator
+COPY app/logger.py ./app/logger.py
+COPY app/config.py ./app/config.py
+ENV PYTHONUNBUFFERED=1
+CMD ["python", "-m", "generator.generator"]

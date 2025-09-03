@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  mongo:
+    image: mongo:6
+    ports: ["27017:27017"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file: .env
+    depends_on:
+      - redis
+      - mongo
+    restart: unless-stopped
+  generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.generator
+    env_file: .env
+    depends_on:
+      - redis
+    restart: unless-stopped
